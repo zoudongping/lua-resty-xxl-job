@@ -1,12 +1,13 @@
 local http = require("resty.http")
 local cjson = require("cjson")
-local utils = require("app.libs.utils")
-local log    = require("app.libs.log")
 
 local timer = ngx.timer
 local time = ngx.time
 local update_time = ngx.update_time
 local config = ngx.shared.config
+local log = ngx.log
+local ERR = ngx.ERR
+local DEBUG = ngx.DEBUG
 
 local xxl_job = {
     _VERSION = "1.0.0",
@@ -64,7 +65,7 @@ function xxl_job.login()
         }
     })
 
-    log.error("=======",cjson.encode(res.headers),res.status)
+    log(ERR,"=======",cjson.encode(res.headers),res.status)
     if res and res.status == 200 then
         update_time()
         local now = time()
@@ -73,7 +74,7 @@ function xxl_job.login()
         return res.headers["Set-Cookie"], now
     end
 
-    log.debug("Login failed: ", err)
+    log(DEBUG, "Login failed: ", err)
     return false
 end
 
@@ -84,7 +85,7 @@ local function auth_request(method, path, body)
     local auth_cookie = config:get("xxl_job_auth_cookie")
     local last_login = config:get("xxl_job_last_login")
     -- 自动处理登录状态
-    log.debug("访问cookie：", auth_cookie, "时间:" , last_login)
+    log(DEBUG, "访问cookie：", auth_cookie, "时间:" , last_login)
     if not auth_cookie or time() - last_login > 3600 then
         auth_cookie, last_login = xxl_job.login()
         if not auth_cookie or not last_login then
@@ -111,7 +112,6 @@ local function auth_request(method, path, body)
         headers = headers,
         ssl_verify = false
     })
-    log.debug("响应", res.body)
     -- 处理认证过期
     if res and res.status == 401 then
         xxl_job.login()
@@ -119,7 +119,7 @@ local function auth_request(method, path, body)
     end
 
     if not res then
-        log.debug("API request failed: ", err)
+        log(DEBUG, "API request failed: ", err)
         return nil, err
     end
 
@@ -233,7 +233,7 @@ function xxl_job.register_executor()
     if data.code ~= 200 then
         return nil, "执行器注册失败：" .. resp.body
     end
-    log.debug("执行器注册成功！")
+    log(DEBUG, "执行器注册成功！")
     return true
 end
 
@@ -242,7 +242,7 @@ function xxl_job.init()
     -- 注册执行器
     local res, err = xxl_job.register_executor()
     if not res then
-        log.error("Executor registration failed: ", cjson.encode(res), err)
+        log(ERR, "Executor registration failed: ", cjson.encode(res), err)
         return
     end
     if not xxl_job.config.executor_id then

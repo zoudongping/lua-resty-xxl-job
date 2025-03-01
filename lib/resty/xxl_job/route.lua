@@ -6,11 +6,10 @@ local ngx_update_time = ngx.update_time
 local spawn = ngx.thread.spawn
 
 local cjson  = require("cjson")
-local log    = require("app.libs.log")
-local schema = require("app.libs.xxl_job.lib.resty.xxl_job.schema")
+local schema = require("resty.xxl_job.schema")
 local lor = require("lor.index")
-local xxl_job = require("app.libs.xxl_job.lib.resty.xxl_job.executor")
-local task_util = require("app.libs.xxl_job.lib.resty.xxl_job.task")
+local xxl_job = require("resty.xxl_job.executor")
+local task_util = require("resty.xxl_job.task")
 local R   = lor:Router()
 
 R:post("/run", function(req, res, next)
@@ -113,7 +112,6 @@ end)
 
 R:post("/beat", function(req, res, next)
 
-    log.debug("心跳检测到位")
     return res:json({
         code = 200,
         msg  = ngx.null

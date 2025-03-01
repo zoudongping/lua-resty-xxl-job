@@ -1,6 +1,6 @@
 -- task_manager.lua
 local cjson = require "cjson"
-local xxl_job = require("app.libs.xxl_job.lib.resty.xxl_job.executor")
+local xxl_job = require("resty.xxl_job.executor")
 
 local ngx = ngx
 local timer = ngx.timer.at
