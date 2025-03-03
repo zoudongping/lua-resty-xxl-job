@@ -198,8 +198,8 @@ end
 -- 获取执行器列表
 function xxl_job.job_groups(params)
     return auth_request("POST", "/jobgroup/pageList", {
-        start = params.start or 0,
-        length = params.start or 10,
+        start = 0,
+        length = 10,
         appname = xxl_job.config.app_name,
         title = params and params.title or nil
     })
