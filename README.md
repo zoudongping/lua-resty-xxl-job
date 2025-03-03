@@ -42,6 +42,16 @@ init.lua
         xxl_job.register_handler(k,v)
     end
 ```
+
+xxl_job_handlers.lua
+```lua
+    return {
+    ["easyHandler"] = function (x)
+        print("简单测试:" .. x)
+    end
+}
+```
+
 mq_transmit.lua
 ```lua
     local xxl_job = require("resty.xxl_job.executor")
@@ -95,5 +105,9 @@ router_config.lua
     }
     xxl_job.trigger_job(trigger_job_info)
     -- 获取任务列表
-    xxl_job.list_jobs()
+    local params = {
+        start = 0,
+        length = 20
+    }
+    xxl_job.list_jobs(params)
 ```

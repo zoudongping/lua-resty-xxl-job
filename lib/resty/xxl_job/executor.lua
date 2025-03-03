@@ -186,20 +186,20 @@ function xxl_job.trigger_job(job_info)
 end
 
 -- 获取任务列表
-function xxl_job.list_jobs()
+function xxl_job.list_jobs(params)
     return auth_request("POST", "/jobinfo/pageList", {
         jobGroup = xxl_job.config.executor_id,  -- 执行器ID
         triggerStatus = -1,
-        start = 0,
-        length = 100
+        start = params.start or 0,
+        length = params.length or 10
     })
 end
 
 -- 获取执行器列表
 function xxl_job.job_groups(params)
     return auth_request("POST", "/jobgroup/pageList", {
-        start = 0,
-        length = 100,
+        start = params.start or 0,
+        length = params.start or 10,
         appname = xxl_job.config.app_name,
         title = params and params.title or nil
     })
